@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+
+@tailwindcss base;
+@tailwindcss components;
+@tailwindcss utilities;
+@import 'tailwindcss';
+
+@theme {
+  --font-manrope: 'Manrope', 'sans-serif';
+  --font-variant: {
+
+  }
+}
+
+body {
+  font-family: var(--font-manrope);
+}
