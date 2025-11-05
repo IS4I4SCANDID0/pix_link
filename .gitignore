@@ -41,3 +41,11 @@ __screenshots__/
 *.ipr
 *.log
 /*vscode
+
+# Sensitive files
+.env
+.env.*.local
+.env.local
+.env.*.development.local
+.env.*.test.local
+.env.*.production.local

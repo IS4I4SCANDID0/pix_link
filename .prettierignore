@@ -1,0 +1,8 @@
+# Ignorar a pasta de build
+dist
+
+# Ignorar a pasta de dependências
+node_modules
+
+# Ignorar todos os arquivos CSS
+*.css

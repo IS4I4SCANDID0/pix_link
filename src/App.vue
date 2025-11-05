@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import Header from './components/Header.vue';
-
+import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
+import DonationForm from './components/DonationForm.vue'
 </script>
 
 <template>
   <Header />
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <main
+    class="max-h-svh h-[345px] bg-black flex flex-col items-center justify-center bg-[url('/image/setup_gamer_white.png')]"
+  >
+    <DonationForm />
+  </main>
+  <Footer />
 </template>
 
 <style scoped></style>

@@ -5,11 +5,15 @@
 @tailwindcss utilities;
 @import 'tailwindcss';
 
+:root {
+  --flu-red: #2A030D;
+  --flu-green: #003322;
+}
+
 @theme {
   --font-manrope: 'Manrope', 'sans-serif';
-  --font-variant: {
-
-  }
+  --color-primary-red: var(--flu-red);
+  --color-primary-green: var(--flu-green);
 }
 
 body {
