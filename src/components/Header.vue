@@ -1,6 +1,6 @@
 <template>
   <header
-    class="bg-linear-to-br from-black via-primary-red to-primary-green text-white p-4 lg:p-8 font-manrope relative"
+    class="bg-linear-to-br from-primary-green via-primary-red to-primary-green text-white p-4 lg:p-8 font-manrope relative"
   >
     <div class="flex flex-col justify-center items-center relative text-center gap-6 py-4">
       <h1 class="text-2xl md:text-3xl lg:text-4xl font-black text-shadow-lg/20 text-center">
@@ -21,15 +21,12 @@
   </header>
 </template>
 
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import PhraseSelectorModal from './BaseModal.vue'
-import { TEXT_OPTIONS } from '../config/text-config'
-import { PencilIcon } from '@heroicons/vue/24/solid'
 import BaseButton from './BaseButton.vue'
 
 const showModal = ref(false)
-const allHeadlines = TEXT_OPTIONS.TEXT_HEADLINES
+// const allHeadlines = TEXT_OPTIONS.TEXT_HEADLINES
 const currentHeadLine = ref(allHeadlines[0])
 
 const handleSelect = (newHeadline: string) => {
@@ -44,4 +41,4 @@ onMounted(() => {
     currentHeadLine.value = savedHeadLinne
   }
 })
-</script>
+</script> -->
