@@ -39,5 +39,5 @@ const baseClass: string[] = [
   'transition',
 ]
 
-const customColors = computed(() => [props.bgColor, props.textColor, props.hoverColor])
+const customColors = computed(() => [props.bgColor, props.textColor, props.hoverColor, props.text])
 </script>
