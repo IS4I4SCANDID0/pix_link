@@ -1,7 +1,7 @@
 <template>
   <footer class="flex flex-col shrink bg-primary-red align-bottom self-end pt-4 px-4">
-    <div
-      class="flex flex-col items-center justify-center gap-3 p-2 text-xs md:text-sm lg:text-base xl:text-lg"
+    <section
+      class="flex flex-col items-center justify-center gap-3 p-2 mb-2 text-xs md:text-sm lg:text-base xl:text-lg"
     >
       <ul class="flex gap-6 md:gap-8 lg:gap-10 xl:gap-12">
         <li>
@@ -30,6 +30,11 @@
           <MdTerminal class="h-4 w-4 md:w-6 md:h-6" />
         </h6>
       </div>
+    </section>
+    <div class="relative flex items-center">
+      <div
+        class="h-0.5 grow md:h-1 w-3/4 lg:h-1.5 rounded-full bg-linear-to-r from-transparent via-secondary-red to-transparent shadow-[0_0_8px_rgb(135, 10, 40)]"
+      ></div>
     </div>
     <p class="text-center text-xs text-zinc-100 p-4">
       &copy; {{ currentYear }} Pix Link. Todos os direitos reservados.

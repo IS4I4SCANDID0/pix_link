@@ -6,14 +6,18 @@
 @import 'tailwindcss';
 
 :root {
-  --flu-red: #2A030D;
-  --flu-green: #003322;
+  --flu-red: #870A28;
+  --flu-dark-red: #2A030D;
+  --flu-dark-green: #003322;
+  --flu-green: #00613C;
 }
 
 @theme {
   --font-manrope: 'Manrope', 'sans-serif';
-  --color-primary-red: var(--flu-red);
-  --color-primary-green: var(--flu-green);
+  --color-primary-red: var(--flu-dark-red);
+  --color-primary-green: var(--flu-dark-green);
+  --color-secondary-red: var(--flu-red);
+  --color-secondary-green: var(--flu-green);
 }
 
 body {
