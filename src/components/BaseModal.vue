@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue'
 import BaseButton from './BaseButton.vue'
+import { GrFormClose } from 'vue-icons-plus/gr'
 
 const props = defineProps({
   visible: Boolean,
@@ -21,23 +22,23 @@ const emit = defineEmits(['close'])
     <div
       v-if="visible"
       :class="[
-        'w-svw h-svh fixed inset-0 z-50 flex flex-col items-center justify-center gb-primary-green/55 transition-all duration-300',
+        'w-svw h-svh fixed inset-0 z-20 flex flex-col items-center justify-center bg-primary-red/85 transition-all duration-300',
         overlayClass,
       ]"
     >
       <div
         :class="[
-          'relative p-4 shadow-lg transform opacity-0 scale-95 animate-fade-in',
+          'w-11/12 relative p-3 z-50 shadow-lg transform scale-95 animate-fade-in bg-white',
           contentClass,
         ]"
       >
         <BaseButton
-          class="absolute top-2 right-2 text-xl font-manrope font-medium"
+          class="w-fit h-fit absolute top-1 right-1 text-xl font-manrope font-semibold text-secondary-red py-0"
           @click="$emit('close')"
         >
-          x
+          <GrFormClose class="text-secondary-red" />
         </BaseButton>
-        <slot />
+        <slot></slot>
       </div>
     </div>
   </Teleport>

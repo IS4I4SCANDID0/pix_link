@@ -1,7 +1,7 @@
 <template>
   <button :class="[baseClass, customColors]" @click="$emit('click')">
-    <slot />
-    <slot name="icon" />
+    <slot></slot>
+    <slot name="icon"></slot>
   </button>
 </template>
 
@@ -11,7 +11,7 @@ const props = defineProps({
   text: String,
   bgColor: {
     type: String,
-    default: 'bg-white',
+    default: 'bg-transparent',
   },
   textColor: {
     type: String,
@@ -25,16 +25,14 @@ const props = defineProps({
 defineEmits(['click'])
 
 const baseClass: string[] = [
-  'h-8',
-  'max-w-fit',
+  'min-h-fit',
+  'min-w-fit',
   'flex',
   'justify-evenly',
   'items-center',
   'gap-1.5',
   'font-bold',
   'rounded-lg',
-  'p-2',
-  'text-xs',
   'text-center',
   'transition',
 ]
