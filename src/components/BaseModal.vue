@@ -22,13 +22,13 @@ const emit = defineEmits(['close'])
     <div
       v-if="visible"
       :class="[
-        'w-svw h-svh fixed inset-0 z-20 flex flex-col items-center justify-center bg-primary-red/85 transition-all duration-300',
+        'w-screen h-screen fixed inset-0 z-20 flex flex-col items-center justify-center bg-primary-red/90 transition-all duration-300',
         overlayClass,
       ]"
     >
       <div
         :class="[
-          'w-11/12 relative p-3 z-50 shadow-lg transform scale-95 animate-fade-in bg-white',
+          'w-3/5 relative p-3 z-50 transform scale-95 animate-fade-in bg-white',
           contentClass,
         ]"
       >
