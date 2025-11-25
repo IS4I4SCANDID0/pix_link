@@ -18,8 +18,65 @@
   --color-primary-green: var(--flu-dark-green);
   --color-secondary-red: var(--flu-red);
   --color-secondary-green: var(--flu-green);
+
+    /* --- CUSTOMIZAÇÃO DO VUE TOAST NOTIFICATION --- */
+  
+  /* Sucesso (Doação Recebida / Cópia OK) -> Verde Fluminense */
+  --v-toast__item--success: var(--flu-green); 
+  --v-toast-text-color-success: #ffffff;
+
+  /* Erro (Validação / Falha) -> Grená */
+  --v-toast-color-error: var(--flu-red); 
+  --v-toast-text-color-error: #ffffff;
+
+  /* Info/Loading (Monitoramento) -> Verde Escuro ou Grená Escuro */
+  --v-toast-color-info: var(--flu-dark-green); 
+  --v-toast-text-color-info: #ffffff;
+
+  /* Default -> Grená Escuro */
+  --v-toast-color-default: var(--flu-dark-red); 
+  --v-toast-text-color-default: #ffffff;
 }
 
 body {
   font-family: var(--font-manrope);
+
+  /* .v-toast__item--success {
+    padding: 0;
+    max-width: 92%;
+    max-height: fit-content;
+    background-color: var(--flu-green);
+  }
+  @media (min: 768px) {
+    .v-toast__item--success{
+      max-width: 21.875rem;
+      max-width: fit-content;
+
+    }
+    .v-toast__item, .v-toast__item--success, .v-toast__item--top {
+       max-width: 21.875rem;
+      max-width: fit-content
+    }
+  } */
+
+  ::-webkit-scrollbar {
+    margin-top: 0.1rem;
+    height: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--flu-dark-green);
+    border-radius: 10px;
+  }
+
+
+  @layer utilities {
+    input:--webkit-autofill {
+      @apply text-white;
+      background-color: transparent !important;
+      --wekit-box-shadow: 0 0 0px 1000px transparent inset !important;
+      --webkit-text-fill-color: #ffffff !important;
+      transition: background-color 5000s ease-in-out 0s !important;
+    }
+  }
 }

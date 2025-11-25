@@ -10,7 +10,7 @@ export default {
         manrope: ['Manrope', 'sans-serif'],
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-out forwards',
+        'fade-in': 'fadeIn 0.3s ease-in-out forwards',
       },
       keyframes: {
         fadeIn: {

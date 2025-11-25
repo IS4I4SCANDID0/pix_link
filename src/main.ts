@@ -6,13 +6,6 @@ import 'vue-toast-notification/dist/theme-sugar.css'
 
 const app = createApp(App)
 
-app.use(VueToast, {
-  position: 'top',
-  duration: 4000,
-  type: 'default',
-  dismissible: true,
-  pauseOnHover: true,
-  maxToasts: 3,
-})
+app.use(VueToast)
 
 app.mount('#app')
