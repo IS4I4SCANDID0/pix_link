@@ -8,9 +8,14 @@
 :root {
   --flu-red: #870A28;
   --flu-dark-red: #2A030D;
-  --flu-dark-green: #003322;
   --flu-green: #00613C;
+  --flu-dark-green: color-mix(in srgb, var(--flu-green), black 62%);
+  /* --flu-deep-green: color-mix(in srgb, var(var(--flu-dark-green), black 40%)) */
+  --flu-light-red: color-mix(in srgb, var(--flu-red), white 60%);
+  --flu-light-green: color-mix(in srgb, var(--flu-green), white 60%);
 }
+
+/* #003322 */
 
 @theme {
   --font-manrope: 'Manrope', 'sans-serif';
@@ -18,6 +23,8 @@
   --color-primary-green: var(--flu-dark-green);
   --color-secondary-red: var(--flu-red);
   --color-secondary-green: var(--flu-green);
+  --color-tertiary-red: var(--flu-light-red);
+  --color-tertiary-green: var(--flu-light-green);
 
     /* --- CUSTOMIZAÇÃO DO VUE TOAST NOTIFICATION --- */
   
@@ -65,18 +72,54 @@ body {
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--flu-dark-green);
+    background: var(--flu-light-green);
     border-radius: 10px;
   }
 
+  input:autofill {
+    background-color: transparent !important;
+    -webkit-text-fill-color: #ffffff !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    color: #ffffff !important;
+    cursor: text !important;
+    
 
-  @layer utilities {
-    input:--webkit-autofill {
-      @apply text-white;
+    &:focus {
       background-color: transparent !important;
-      --wekit-box-shadow: 0 0 0px 1000px transparent inset !important;
-      --webkit-text-fill-color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
       transition: background-color 5000s ease-in-out 0s !important;
+      color: #ffffff !important;
+      cursor: text !important;
     }
+
+
+  }
+
+/* AUTOFILL BACKGROUND TRANSPARENTE */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+
+  }
+
+  /* 1. Força texto branco (double kill) */
+  input[type="text"],
+  input[type="number"] {
+    color: white !important;
+    -webkit-text-fill-color: white !important; /* Webkit force */
+  }
+
+  /* 2. Color scheme dark (spinners brancos) */
+  input[type="number"] {
+    color-scheme: dark;
+  }
+
+  /* 3. Autofill fix (Chrome bug famoso) */
+  input:-webkit-autofill {
+    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
   }
 }

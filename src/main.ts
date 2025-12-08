@@ -2,10 +2,12 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './styles/global.css'
 import VueToast from 'vue-toast-notification'
+import { createPinia } from 'pinia'
 import 'vue-toast-notification/dist/theme-sugar.css'
 
 const app = createApp(App)
 
 app.use(VueToast)
+app.use(createPinia())
 
 app.mount('#app')
