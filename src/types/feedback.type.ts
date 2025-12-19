@@ -1,5 +1,3 @@
-import type { Ref } from 'vue'
-
 export type FeedbackType = 'error' | 'success' | 'tooltip'
 
 export type TFeedback = {
@@ -7,8 +5,4 @@ export type TFeedback = {
   text: string
   type: FeedbackType
   duration?: number
-}
-
-export type TUseBreakpoint = {
-  iconSize: Ref<number>
 }

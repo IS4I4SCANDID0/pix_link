@@ -1,12 +1,12 @@
 <template>
-  <button :class="[baseClass, customColors]" @click="$emit('click')">
+  <button :class="[...baseClass, customColors]" @click="$emit('click')">
     <slot></slot>
     <slot name="icon"></slot>
   </button>
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits } from 'vue'
+import { computed } from 'vue'
 const props = defineProps({
   text: String,
   bgColor: {
@@ -15,9 +15,9 @@ const props = defineProps({
   },
   textColor: {
     type: String,
-    default: 'text-zinc-800',
+    default: 'text-white',
   },
-  hoverColor: {
+  hoverStyle: {
     type: String,
     default: 'hover:bg-gray-200',
   },
@@ -37,5 +37,5 @@ const baseClass: string[] = [
   'transition',
 ]
 
-const customColors = computed(() => [props.bgColor, props.textColor, props.hoverColor, props.text])
+const customColors = computed(() => [...baseClass, props.bgColor, props.textColor, props.hoverStyle, props.text])
 </script>

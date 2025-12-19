@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+@import "tailwindcss";
+
 
 @tailwindcss base;
 @tailwindcss components;
 @tailwindcss utilities;
-@import 'tailwindcss';
 
 :root {
   --flu-red: #870A28;
@@ -15,18 +16,34 @@
   --flu-light-green: color-mix(in srgb, var(--flu-green), white 60%);
 }
 
-/* #003322 */
-
 @theme {
+  /* BREAKPPOINTS */
+  --breakpoint-xs: 24rem;
+  --breakpoint-3xl: 120.5rem;
+  --breakpoint-4xl: 160rem;
+
+  /* FONTE */
   --font-manrope: 'Manrope', 'sans-serif';
+
+  /* CORES */
   --color-primary-red: var(--flu-dark-red);
   --color-primary-green: var(--flu-dark-green);
   --color-secondary-red: var(--flu-red);
   --color-secondary-green: var(--flu-green);
   --color-tertiary-red: var(--flu-light-red);
   --color-tertiary-green: var(--flu-light-green);
+  
+  
+  /* Animações */
+  --animate-fade-in: fadeIn 0.4s ease-in-out forwards;
+  --animate-overlay-fade: overlayFade 0.4s ease-in-out forwards;
+  --animate-clear-blur: clearBlur 0.4s ease-in forwards;
+  --animate-arrow-pointing-right: arrowPointingRight 2s ease-in-out infinite ;
+  --animate-regressive-fade: regressivefade 1s ease-in-out alternate;
 
-    /* --- CUSTOMIZAÇÃO DO VUE TOAST NOTIFICATION --- */
+
+
+  /* --- CUSTOMIZAÇÃO DO VUE TOAST NOTIFICATION --- */
   
   /* Sucesso (Doação Recebida / Cópia OK) -> Verde Fluminense */
   --v-toast__item--success: var(--flu-green); 
@@ -43,83 +60,139 @@
   /* Default -> Grená Escuro */
   --v-toast-color-default: var(--flu-dark-red); 
   --v-toast-text-color-default: #ffffff;
+
+}
+/* AINMATIONS */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes overlayFade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes regressiveFade {
+  from { opacity: 1; }
+  to   { opacity: 0.5; }
+}
+
+@keyframes arrowPointingRight {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 body {
   font-family: var(--font-manrope);
 
-  /* .v-toast__item--success {
-    padding: 0;
-    max-width: 92%;
+  .v-toast__item, .v-toast__item--success, .v-toast__item--top {
+    width: 80%;
+    max-width: 21rem;
     max-height: fit-content;
-    background-color: var(--flu-green);
-  }
-  @media (min: 768px) {
-    .v-toast__item--success{
-      max-width: 21.875rem;
-      max-width: fit-content;
+    justify-items: center;
+    justify-content: center;
+    margin-top: 0.5rem;
+    background-color: var(--flu-light-green);
 
+    .v-toast, .v-toast__icon{
+      display: none;
     }
+    
+    div > span {
+      color: var(--flu-dark-green);
+    }
+
+    .v-toast__text {
+      padding: 10px 0;
+    }
+  }
+  @media (min: 770px) {
     .v-toast__item, .v-toast__item--success, .v-toast__item--top {
-       max-width: 21.875rem;
-      max-width: fit-content
+      max-width: 21rem;
     }
-  } */
-
-  ::-webkit-scrollbar {
-    margin-top: 0.1rem;
-    height: 2px;
   }
+}
 
-  ::-webkit-scrollbar-thumb {
-    background: var(--flu-light-green);
-    border-radius: 10px;
-  }
 
-  input:autofill {
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--flu-light-green);
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--flu-green);
+}
+
+
+div > form > input:autofill {
+  background-color: transparent !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  color: #ffffff !important;
+  cursor: text !important;
+  
+  &:focus {
     background-color: transparent !important;
     -webkit-text-fill-color: #ffffff !important;
     transition: background-color 5000s ease-in-out 0s !important;
     color: #ffffff !important;
     cursor: text !important;
-    
-
-    &:focus {
-      background-color: transparent !important;
-      -webkit-text-fill-color: #ffffff !important;
-      transition: background-color 5000s ease-in-out 0s !important;
-      color: #ffffff !important;
-      cursor: text !important;
-    }
-
-
-  }
-
-/* AUTOFILL BACKGROUND TRANSPARENTE */
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus {
-    -webkit-text-fill-color: white !important;
-    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
-    transition: background-color 5000s ease-in-out 0s !important;
-
-  }
-
-  /* 1. Força texto branco (double kill) */
-  input[type="text"],
-  input[type="number"] {
-    color: white !important;
-    -webkit-text-fill-color: white !important; /* Webkit force */
-  }
-
-  /* 2. Color scheme dark (spinners brancos) */
-  input[type="number"] {
-    color-scheme: dark;
-  }
-
-  /* 3. Autofill fix (Chrome bug famoso) */
-  input:-webkit-autofill {
-    -webkit-text-fill-color: white !important;
-    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
   }
 }
+/* AUTOFILL BACKGROUND TRANSPARENTE */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+  /* 1. Força texto branco (double kill) */
+input[type="text"],
+input[type="number"] {
+  color: white !important;
+  -webkit-text-fill-color: white !important; /* Webkit force */
+}
+
+  /* 2. Color scheme dark (spinners brancos) */
+input[type="number"] {
+  color-scheme: dark;
+}
+
+  /* 3. Autofill fix (Chrome bug famoso) */
+input:-webkit-autofill {
+  -webkit-text-fill-color: white !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+}
+

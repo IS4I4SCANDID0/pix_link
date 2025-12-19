@@ -2,6 +2,6 @@
   "$schema": "https://json.schemastore.org/prettierrc",
   "semi": false,
   "singleQuote": true,
-  "printWidth": 165,
+  "printWidth": 150,
   "exclude": ["node_modules", "dist", "*.css"]
 }

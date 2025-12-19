@@ -4,6 +4,7 @@ import generatePixPayload from '../modules/pixPayloadGenerate'
 import { useQRCode } from '@vueuse/integrations/useQRCode'
 import { useFeedbackStore } from './feedback.store'
 import { useToast } from 'vue-toast-notification'
+import { useRateLimitStore } from './rateLimit.store'
 
 // Regex para validação de nome
 const NAME_REGEX = /^[a-zA-Z0-9\-_.@]{1,}$/
@@ -14,6 +15,8 @@ export const useDonationStore = defineStore('donation', () => {
 
   // Feedback Store (Pinia)
   const feedbackStore = useFeedbackStore()
+  // RateLimit Store(Pinia)
+  const rateLimitStore = useRateLimitStore()
 
   // ========== ESTADO ==========
   const showModal = ref(false)
@@ -51,14 +54,14 @@ export const useDonationStore = defineStore('donation', () => {
   // HTML do GIF de sucesso (função para pegar nome atualizado)
   const createSuccessGifHTML = () => {
     return `
-      <div style="display: flex; flex-direction: column; align-items: center; padding: 8px;">
-        <span style="font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; color: #00613C;">
-          Você é incrível${giverName.value ? `, ${giverName.value}` : 'Gente fina'}! 
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px;">
+        <span style="font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; color: #00613C;">
+          Você é incrível ${giverName.value ? `, ${giverName.value}` : 'Gente fina'}!
         </span>
         <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZm9iN3d5dmdkczM1MmVmZm5kb2xsM2F2OTc0bmRsOHk3a3cxczJ2OCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qIXVd1RoKGqlO/giphy.gif"
-          style="width: 120px; border-radius: 8px; border: 2px solid #00613C;"
+          style="width: 170px; border-radius: 8px;"
           alt="GIF de aplausos" />
-        <span style="font-size: 0.9rem; margin-top: 10px; color: #00613C; font-weight: 600;">
+        <span style="font-size: 0.9rem; margin-top: 8px; color: #00613C; font-weight: 600;">
           Sua doação faz toda diferença!
         </span>
       </div>
@@ -115,16 +118,14 @@ export const useDonationStore = defineStore('donation', () => {
     // Limpa tooltip antes de validar
     cleanupTooltip()
 
-    // feedbackStore.clearTooltipMessage()
-
-    // Validação 1: Nome vazio
-    if (!giverName.value || giverName.value.trim() === '') {
-      feedbackStore.showError('Digite seu nome', 2500)
-      nameError.value = true
+    // ========== Cria um rate limit para proteger a aplicação de quedas ==========
+    const { allowed, timeToWait } = rateLimitStore.canProceed('donation')
+    if (!allowed) {
+      feedbackStore.showError('Muitas tentativas! Retorne em instantes', 5000)
       return
     }
 
-    // Validação 2: Nome muito curto
+    // Validação 1: Nome muito curto ou em branco
     if (giverName.value.length < 4) {
       feedbackStore.showError('Mínimo de 4 caracteres', 2500)
       nameError.value = true
@@ -138,15 +139,7 @@ export const useDonationStore = defineStore('donation', () => {
       return
     }
 
-    // Validação 4: CORRIGIDA - Valor inválido (menor que 1 real)
-    // console.log('🔍 Validando valor:', {
-    //   amount: amount.value,
-    //   isAmountValid: isAmountValid.value,
-    //   typeof: typeof amount.value,
-    // })
-
     if (!isAmountValid.value) {
-      console.log('❌ ENTROU NA VALIDAÇÃO DE ERRO - Valor inválido!')
       feedbackStore.showError('Valor inválido. Mínimo de R$ 1,00', 2500)
       amountError.value = true
       return
@@ -198,29 +191,30 @@ export const useDonationStore = defineStore('donation', () => {
       // 1. Copia para clipboard
       await navigator.clipboard.writeText(pixPayload.value)
 
-      // 2. Mostra feedback visual
+      // 2. Mostra feedback IMEDIATAMENTE (z-index 9999 garante visibilidade)
       feedbackStore.isCopied = true
       feedbackStore.showSuccess('Chave PIX copiada com sucesso!', 2500)
 
-      // 3. Aguarda para usuário ver
-      await new Promise((resolve) => setTimeout(resolve, 800))
+      // 3. AGUARDA 1 segundo ANTES de fechar modal
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // 4. Limpa mensagem e fecha modal
+      // 4. Limpa banner de feedback
       feedbackStore.clearAllFeedbacks()
+
+      // 5. Fecha modal SOMENTE APÓS banner sumir
+      await new Promise((resolve) => setTimeout(resolve, 100))
       showModal.value = false
       modalType.value = null
 
-      // 5. Mostra toast com GIF
+      // 6. Mostra toast com GIF
       setTimeout(() => {
         $toast.success(createSuccessGifHTML(), {
           position: 'top',
-          duration: 6000,
-          dismissible: true,
         })
         resetForm()
-      }, 500)
+      }, 300)
 
-      // 6. Reseta estado copiado
+      // 7. Reseta estado copiado
       setTimeout(() => {
         feedbackStore.isCopied = false
       }, 3000)
@@ -260,7 +254,7 @@ export const useDonationStore = defineStore('donation', () => {
     // Só mostra tooltip se NÃO houver erro
     if (!amountError.value) {
       // Mostra tooltip e armazena ID
-      tooltipFeedbackId = feedbackStore.showTooltip('Use ponto ou vírgula para centavos!', 6000)
+      tooltipFeedbackId = feedbackStore.showTooltip('Use ponto ou vírgula para centavos!', 7000)
 
       // Watch isolado: remove tooltip quando usuário digitar
       amountWatcherStop = watch(
@@ -305,5 +299,6 @@ export const useDonationStore = defineStore('donation', () => {
     handleAmountFocus,
     handleAmountBlur,
     resetForm,
+    rateLimitStore,
   }
 })
