@@ -1,0 +1,242 @@
+name: CI/CD Pipeline - Parallel Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ========================================
+  # ONDA 1: TESTES RÁPIDOS (PARALELO TOTAL)
+  # ========================================
+
+  lint:
+    name: 🔍 Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
+  unit-tests:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:unit
+        env:
+          VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
+          VITE_MERCHANT_NAME: ${{ secrets.VITE_MERCHANT_NAME }}
+          VITE_MERCHANT_CITY: ${{ secrets.VITE_MERCHANT_CITY }}
+          VALIDATION_SALT: ${{ secrets.VALIDATION_SALT }}
+
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
+          VITE_MERCHANT_NAME: ${{ secrets.VITE_MERCHANT_NAME }}
+          VITE_MERCHANT_CITY: ${{ secrets.VITE_MERCHANT_CITY }}
+          VALIDATION_SALT: ${{ secrets.VALIDATION_SALT }}
+
+      # Compartilha o build para os testes E2E (evita rebuildar 4x)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  # ========================================
+  # ONDA 2: E2E TESTS (PARALELO, APÓS BUILD)
+  # ========================================
+
+  e2e-modal:
+    name: 🎭 E2E Modal
+    runs-on: ubuntu-latest
+    needs: build # ⚠️ Espera build terminar
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+
+      # Baixa o build (não precisa buildar de novo!)
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: cypress-io/github-action@v6
+        with:
+          start: npm run preview
+          wait-on: 'http://localhost:4173'
+          spec: cypress/e2e/modal.cy.ts
+        env:
+          VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
+          VITE_MERCHANT_NAME: ${{ secrets.VITE_MERCHANT_NAME }}
+          VITE_MERCHANT_CITY: ${{ secrets.VITE_MERCHANT_CITY }}
+          VALIDATION_SALT: ${{ secrets.VALIDATION_SALT }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-modal-screenshots
+          path: cypress/screenshots
+
+  e2e-payload:
+    name: 💳 E2E Payload
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: cypress-io/github-action@v6
+        with:
+          start: npm run preview
+          wait-on: 'http://localhost:4173'
+          spec: cypress/e2e/payload-generation.cy.ts
+        env:
+          VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
+          VITE_MERCHANT_NAME: ${{ secrets.VITE_MERCHANT_NAME }}
+          VITE_MERCHANT_CITY: ${{ secrets.VITE_MERCHANT_CITY }}
+          VALIDATION_SALT: ${{ secrets.VALIDATION_SALT }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-payload-screenshots
+          path: cypress/screenshots
+
+  e2e-security:
+    name: 🛡️ E2E Security
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: cypress-io/github-action@v6
+        with:
+          start: npm run preview
+          wait-on: 'http://localhost:4173'
+          spec: cypress/e2e/security.cy.ts
+        env:
+          VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
+          VITE_MERCHANT_NAME: ${{ secrets.VITE_MERCHANT_NAME }}
+          VITE_MERCHANT_CITY: ${{ secrets.VITE_MERCHANT_CITY }}
+          VALIDATION_SALT: ${{ secrets.VALIDATION_SALT }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-security-screenshots
+          path: cypress/screenshots
+
+  e2e-ratelimit:
+    name: ⏱️ E2E Rate Limit
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: cypress-io/github-action@v6
+        with:
+          start: npm run preview
+          wait-on: 'http://localhost:4173'
+          spec: cypress/e2e/rate-limit.cy.ts
+        env:
+          VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
+          VITE_MERCHANT_NAME: ${{ secrets.VITE_MERCHANT_NAME }}
+          VITE_MERCHANT_CITY: ${{ secrets.VITE_MERCHANT_CITY }}
+          VALIDATION_SALT: ${{ secrets.VALIDATION_SALT }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-ratelimit-screenshots
+          path: cypress/screenshots
+
+  # ========================================
+  # ONDA 3: DEPLOY (SÓ SE TUDO PASSAR)
+  # ========================================
+
+  deploy:
+    name: 🚀 Deploy
+    runs-on: ubuntu-latest
+    needs: [lint, unit-tests, build, e2e-modal, e2e-payload, e2e-security, e2e-ratelimit]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+
+      # Baixa o build já pronto (não rebuilda!)
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: 🚀 Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod --prebuilt'

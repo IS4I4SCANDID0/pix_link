@@ -7,3 +7,4 @@ node_modules
 # Ignorar todos os arquivos CSS
 *.css
 global.css
+tailwind.config.ts

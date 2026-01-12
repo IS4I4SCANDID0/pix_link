@@ -1,13 +1,13 @@
 <template>
   <div class="flex-1 flex flex-col overflow-hidden bg-linear-to-br from-primary-green via-primary-red to-primary-green">
     <!-- Header com botão voltar -->
-    <header class="shrink-0 bg-black/20 backdrop-blur-sm border-b border-white/10 px-4 py-3 sm:px-6 sm:py-4">
-      <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <header class="shrink-0 bg-black/20 backdrop-blur-sm border-b border-white/10 px-4 py-6 sm:px-6 sm:py-4">
+      <div class="max-w-4xl mx-auto flex items-center justify-between lg:px-4">
         <BaseButton
           @click="$emit('close')"
-          class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition text-white text-sm font-medium"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-1000 text-white text-sm font-medium"
         >
-          <BsArrowLeft class="w-4 h-4" />
+          <BsArrowLeft class="w-4 h-4 group-hover:-translate-x-5" />
           <span class="hidden sm:inline">Voltar</span>
         </BaseButton>
         <h1 class="text-white font-bold text-sm sm:text-base">Sobre o Desenvolvedor</h1>
@@ -17,17 +17,17 @@
     </header>
 
     <!-- Conteúdo principal scrollável -->
-    <main class="flex-1 overflow-auto gap-2">
-      <div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 sm:py-8 space-y-6 sm:space-y-8">
+    <main class="flex-1 overflow-auto snap-proximity">
+      <div class="max-w-4xl mx-auto px-4 py-6 sm:px-6 sm:py-8 space-y-6 sm:space-y-8 lg:space-y-3.5">
         <!-- Hero Section -->
-        <section class="text-center space-y-3 sm:space-y-4">
+        <section class="shrink text-center space-y-3 sm:space-y-4 lg:space-y-6 xl:space-y-5 3xl:space-y-7">
           <div
             class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/10 backdrop-blur-sm border-2 border-white/30"
           >
-            <MdTerminal class="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+            <MdTerminal class="w-9 h-9 sm:w-12 sm:h-12 text-white" />
           </div>
           <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white">Isaias Candido</h2>
-          <p class="text-sm sm:text-base lg:text-lg text-white/90 font-medium max-w-2xl mx-auto">
+          <p class="text-sm sm:text-base lg:text-lg text-white/90 font-medium max-w-2xl mx-auto my-6">
             Desenvolvedor Full Stack especializado em criar experiências web modernas e funcionais
           </p>
           <div
@@ -42,7 +42,7 @@
         </section>
 
         <!-- Cards de Contato -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 py-1 gap-4 space-y-2">
           <!-- E-mail -->
           <a
             href="mailto:isaiascandido92@outlook.com?subject=Interesse%20nos%20seus%20servi%C3%A7os&body=Ol%C3%A1%20Isaias!%0A%0AEncontrei%20seu%20trabalho%20através%20do%20Pix%20Link."
@@ -123,7 +123,7 @@
         </section>
 
         <!-- Tech Stack -->
-        <section class="space-y-4 pb-6">
+        <section class="space-y-4 pb-6 mt-10">
           <h3 class="text-xl sm:text-2xl font-bold text-white text-center">Tecnologias</h3>
           <ul class="flex flex-wrap justify-center gap-2 sm:gap-3">
             <li

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-svh w-svw flex flex-col overflow-hidden">
+  <div class="h-screen w-screen flex flex-col overflow-hidden">
     <Transition
       mode="out-in"
       enter-active-class="transition-all duration-300 ease-out"
