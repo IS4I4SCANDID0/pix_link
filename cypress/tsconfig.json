@@ -1,9 +1,14 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["./e2e/**/*", "./support/**/*"],
+  "extends": ["@vue/tsconfig/tsconfig.dom.json", "../tsconfig.json"],
+  "include": ["./e2e/**/*", "./support/**/*", "**/*.ts"],
   "exclude": ["./support/component.*"],
   "compilerOptions": {
-    "isolatedModules": false,
-    "types": ["cypress"]
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["esnext", "dom"],
+    "types": ["cypress", "node"],
+    "isolatedModules": true,
+    "noEmit": true
   }
 }
