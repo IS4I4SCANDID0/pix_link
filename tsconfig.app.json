@@ -6,7 +6,8 @@
     "src/**/*.vue",
     "cypress/e2e/donation-security.cy.ts",
     "cypress/e2e/payload-generation.cy.ts",
-    "cypress/e2e/rate-limit.cy.ts"
+    "cypress/e2e/rate-limit.cy.ts",
+    "cypress/e2e/**/*.cy.ts"
   ],
   "exclude": ["cypress", "node_modules", "cypress/**/*", "src/**/__tests__/*"],
   "compilerOptions": {
