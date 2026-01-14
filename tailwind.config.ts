@@ -6,6 +6,11 @@ export default {
       fontFamily: {
         manrope: ['Manrope', 'sans-serif'],
       },
+      screens: {
+        'xs': '384px',
+        '3xl': '1925px',
+        '4xl': '2560px',
+      },
     },
   },
 }

@@ -1,125 +1,157 @@
-// src/stores/rateLimit.store.ts
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
-export const useRateLimitStore = defineStore('rateLimit', () => {
-  const attempts = ref<number[]>([])
-  const maxAttempts = ref(3)
-  const windowMs = ref(60000) // 60 segundos
-  const isBlocked = ref(false)
-  const blockedUntil = ref(0)
+export const useRateLimitStore = defineStore(
+  'rateLimit',
+  () => {
+    // ========== CONFIGURAÇÃO ==========
+    const maxAttempts = ref(3)
+    const windowMs = ref(60000) // 60 segundos
+    const blockDurationMs = ref(60000) // 60 segundos de bloqueio
 
-  // Variável para forçar recálculo do computed
-  const forceUpdate = ref(0)
+    // ========== ESTADO ==========
+    const attempts = ref<number[]>([])
+    const isBlocked = ref(false)
+    const blockedUntil = ref<number | null>(null)
+    const cooldownTime = ref(0)
 
-  // Interval para atualização
-  let updateInterval: ReturnType<typeof setInterval> | null = null
+    let countdownInterval: number | null = null
 
-  const cooldownTime = computed(() => {
-    // Lê forceUpdate para criar dependência reativa (truque para forçar recálculo)
-    forceUpdate.value
+    // ========== COMPUTED ==========
+    const remainingAttempts = computed(() => {
+      const now = Date.now()
+      const recentAttempts = attempts.value.filter((timestamp) => now - timestamp < windowMs.value)
+      return Math.max(0, maxAttempts.value - recentAttempts.length)
+    })
 
-    if (!isBlocked.value || blockedUntil.value === 0) {
-      return 0
+    // ========== ACTIONS ==========
+    const cleanOldAttempts = () => {
+      const now = Date.now()
+      attempts.value = attempts.value.filter((timestamp) => now - timestamp < windowMs.value)
     }
 
-    const now = Date.now()
-    const remaining = Math.ceil((blockedUntil.value - now) / 1000)
-
-    if (remaining <= 0) {
-      // Tempo acabou, desbloqueia
-      isBlocked.value = false
-      blockedUntil.value = 0
-      attempts.value = []
-      stopUpdateInterval()
-      return 0
-    }
-
-    return remaining
-  })
-
-  const startUpdateInterval = () => {
-    if (updateInterval) return
-
-    updateInterval = setInterval(() => {
-      // Incrementa forceUpdate para forçar recálculo do computed
-      forceUpdate.value++
-
-      // Verifica se deve parar o interval
-      if (!isBlocked.value || Date.now() >= blockedUntil.value) {
-        stopUpdateInterval()
+    const startCountdown = () => {
+      if (countdownInterval) {
+        clearInterval(countdownInterval)
       }
-    }, 1000) // Atualiza a cada segundo
-  }
 
-  const stopUpdateInterval = () => {
-    if (updateInterval) {
-      clearInterval(updateInterval)
-      updateInterval = null
+      const updateCooldown = () => {
+        if (!blockedUntil.value) {
+          cooldownTime.value = 0
+          if (countdownInterval) clearInterval(countdownInterval)
+          return
+        }
+
+        const remaining = Math.ceil((blockedUntil.value - Date.now()) / 1000)
+
+        if (remaining <= 0) {
+          cooldownTime.value = 0
+          isBlocked.value = false
+          blockedUntil.value = null
+          if (countdownInterval) clearInterval(countdownInterval)
+          countdownInterval = null
+        } else {
+          cooldownTime.value = remaining
+        }
+      }
+
+      updateCooldown()
+      countdownInterval = window.setInterval(updateCooldown, 1000)
     }
-  }
 
-  const canProceed = (_action: string = 'default'): { allowed: boolean; timeToWait: number } => {
-    const now = Date.now()
+    const canProceed = (_action: string = 'default'): { allowed: boolean; timeToWait: number } => {
+      const now = Date.now()
 
-    // Remove tentativas antigas
-    attempts.value = attempts.value.filter((time) => now - time < windowMs.value)
+      // Verificar se está bloqueado
+      if (isBlocked.value && blockedUntil.value) {
+        if (now < blockedUntil.value) {
+          const timeToWait = Math.ceil((blockedUntil.value - now) / 1000)
+          return { allowed: false, timeToWait }
+        } else {
+          // Desbloqueou
+          isBlocked.value = false
+          blockedUntil.value = null
+          cooldownTime.value = 0
+          if (countdownInterval) {
+            clearInterval(countdownInterval)
+            countdownInterval = null
+          }
+        }
+      }
 
-    // Verifica se ainda está bloqueado
-    if (isBlocked.value && now < blockedUntil.value) {
-      const timeToWait = Math.ceil((blockedUntil.value - now) / 1000)
-      return { allowed: false, timeToWait }
+      // Limpar tentativas antigas
+      cleanOldAttempts()
+
+      // Verificar se excedeu o limite
+      if (attempts.value.length >= maxAttempts.value) {
+        isBlocked.value = true
+        blockedUntil.value = now + blockDurationMs.value
+        startCountdown()
+
+        const timeToWait = Math.ceil(blockDurationMs.value / 1000)
+        return { allowed: false, timeToWait }
+      }
+
+      // Registrar nova tentativa
+      attempts.value.push(now)
+
+      return { allowed: true, timeToWait: 0 }
     }
 
-    // Desbloqueia se o tempo passou
-    if (isBlocked.value && now >= blockedUntil.value) {
-      isBlocked.value = false
-      blockedUntil.value = 0
+    const reset = () => {
       attempts.value = []
-      stopUpdateInterval()
+      isBlocked.value = false
+      blockedUntil.value = null
+      cooldownTime.value = 0
+      if (countdownInterval) {
+        clearInterval(countdownInterval)
+        countdownInterval = null
+      }
     }
 
-    // Verifica se excedeu o limite
-    if (attempts.value.length >= maxAttempts.value) {
-      const oldestAttempt = Math.min(...attempts.value)
-      const timeToWait = Math.ceil((windowMs.value - (now - oldestAttempt)) / 1000)
-
-      isBlocked.value = true
-      blockedUntil.value = now + timeToWait * 1000
-
-      // Inicia interval para contagem regressiva
-      startUpdateInterval()
-
-      return { allowed: false, timeToWait }
+    const configure = (newMaxAttempts: number, newWindowMs: number) => {
+      maxAttempts.value = newMaxAttempts
+      windowMs.value = newWindowMs
     }
 
-    // Registra nova tentativa
-    attempts.value.push(now)
+    // ========== INICIALIZAÇÃO ==========
+    // Verificar se havia bloqueio ao carregar
+    if (isBlocked.value && blockedUntil.value) {
+      const now = Date.now()
+      if (now < blockedUntil.value) {
+        startCountdown()
+      } else {
+        isBlocked.value = false
+        blockedUntil.value = null
+        cooldownTime.value = 0
+      }
+    }
 
-    return { allowed: true, timeToWait: 0 }
-  }
+    return {
+      // Estado
+      attempts,
+      isBlocked,
+      blockedUntil,
+      cooldownTime,
+      maxAttempts,
+      windowMs,
 
-  const reset = () => {
-    attempts.value = []
-    isBlocked.value = false
-    blockedUntil.value = 0
-    stopUpdateInterval()
-  }
+      // Computed
+      remainingAttempts,
 
-  const configure = (max: number, window: number) => {
-    maxAttempts.value = max
-    windowMs.value = window
-  }
-
-  return {
-    attempts,
-    maxAttempts,
-    windowMs,
-    isBlocked,
-    blockedUntil,
-    cooldownTime,
-    canProceed,
-    reset,
-    configure,
-  }
-})
+      // Actions
+      canProceed,
+      reset,
+      configure,
+      startCountdown,
+    }
+  },
+  {
+    // ========== PERSISTÊNCIA ==========
+    persist: {
+      key: 'rateLimit',
+      storage: localStorage,
+      pick: ['attempts', 'isBlocked', 'blockedUntil', 'cooldownTime'],
+    },
+  },
+)

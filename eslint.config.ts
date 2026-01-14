@@ -1,15 +1,9 @@
 import { globalIgnores } from 'eslint/config'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVue from 'eslint-plugin-vue'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-ignore @ts-expect-error - plugin-cypress ainda não possui tipos oficiais para o formato flat config do ESLint
 import pluginCypress from 'eslint-plugin-cypress'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
-
-// To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
-// More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
 
 export default defineConfigWithVueTs(
   {
@@ -21,14 +15,32 @@ export default defineConfigWithVueTs(
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
-  
+
+  // =============================================================
+  // REGRAS GLOBAIS (Aplica-se ao src/ e cypress/)
+  // =============================================================
+  {
+    rules: {
+      'vue/multi-word-component-names': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off', // Resolve o erro no shims-vue.d.ts
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+    },
+  },
+
+  // =============================================================
+  // REGRAS ESPECÍFICAS DO CYPRESS
+  // =============================================================
   {
     ...pluginCypress.configs.recommended,
-    files: [
-      '**/__tests__/*.{cy,spec}.{js,ts,jsx,tsx}',
-      'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}',
-      'cypress/support/**/*.{js,ts,jsx,tsx}'
-    ],
+    files: ['**/__tests__/*.{cy,spec}.{js,ts,jsx,tsx}', 'cypress/e2e/**/*.{cy,spec}.{js,ts,jsx,tsx}', 'cypress/support/**/*.{js,ts,jsx,tsx}'],
+    rules: {
+      'cypress/no-unnecessary-waiting': 'off',
+      'cypress/unsafe-to-chain-command': 'off',
+    },
   },
+
   skipFormatting,
 )

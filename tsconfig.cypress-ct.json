@@ -5,7 +5,10 @@
     "src/**/*",
     "src/**/*.vue",
     "cypress/support/component.*",
-    "cypress/support/commands.ts"
+    "cypress/support/commands.ts",
+    "cypress/e2e/donation-security.cy.ts",
+    "cypress/e2e/payload-generation.cy.ts",
+    "cypress/e2e/rate-limit.cy.ts"
   ],
   "exclude": [],
   "compilerOptions": {

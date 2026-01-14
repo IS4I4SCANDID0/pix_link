@@ -30,7 +30,7 @@ const calculateCRC16 = (payload: string): string => {
   crc &= 0xffff // Garante que o valor seja de 16 bits
 
   // Converte para hexadecimal, adiciona zeros à esquerda se necessário, e converte para maiúsculas
-  let crcHex = crc.toString(16).toUpperCase()
+  const crcHex = crc.toString(16).toUpperCase()
 
   return crcHex.padStart(4, '0')
 }
@@ -63,6 +63,89 @@ const formatAmount = (amount: number): string => {
 }
 
 /**
+ * Remove acentos e caracteres especiais de uma string.
+ * @param {string} text - Texto a ser sanitizado.
+ * @returns {string} Texto sem acentos e em maiúsculas.
+ */
+const removeAccents = (text: string): string => {
+  return text
+    .normalize('NFD') // Normaliza para decompor caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+    .toUpperCase()
+    .replace(/[^A-Z0-9\s.-]/g, '') // Remove caracteres especiais, mantendo espaços, pontos e hífens
+    .trim() // Remove espaços extras no início/fim
+}
+
+/**
+ * Abrevia nome de cidade de forma inteligente para caber em 15 caracteres.
+ * Exemplo: "São José do Rio Preto" → "SAO JOSE R P"
+ * @param {string} city - Nome completo da cidade.
+ * @returns {string} Nome abreviado (máx. 15 caracteres).
+ */
+const abbreviateCityName = (city: string): string => {
+  // Remove acentos e caracteres especiais
+  const sanitizedCity = removeAccents(city)
+
+  // Se já cabe em 15 caracteres, retorna
+  if (sanitizedCity.length <= 15) {
+    return sanitizedCity
+  }
+
+  // Divide em palavras (remove strings vazias)
+  const words = sanitizedCity.split(/\s+/).filter((w) => w.length > 0)
+
+  // Se for uma única palavra longa, trunca diretamente
+  if (words.length === 1) {
+    return sanitizedCity.slice(0, 15)
+  }
+
+  // Palavras pequenas que podem ser ignoradas
+  const smallWords = ['DE', 'DO', 'DA', 'DAS', 'DOS', 'E']
+  const abbreviated: string[] = []
+
+  // Sempre adiciona a primeira palavra completa
+  abbreviated.push(words[0]!)
+
+  // Tenta adicionar a segunda palavra completa
+  if (words.length > 1) {
+    const trySecond = abbreviated.join(' ') + ' ' + words[1]
+    if (trySecond.length <= 15) {
+      abbreviated.push(words[1]!)
+    } else {
+      abbreviated.push(words[1]!.charAt(0))
+    }
+  }
+
+  // Processa as palavras restantes
+  for (let i = 2; i < words.length; i++) {
+    const word = words[i]
+
+    // Pula palavras pequenas (de, do, da)
+    if (smallWords.includes(word!)) {
+      continue
+    }
+
+    // Tenta adicionar a inicial
+    const tryAddInitial = abbreviated.join(' ') + ' ' + word!.charAt(0)
+
+    if (tryAddInitial.length <= 15) {
+      abbreviated.push(word!.charAt(0))
+    } else {
+      break // Não cabe mais nada
+    }
+  }
+
+  let finalCityName = abbreviated.join(' ')
+
+  // Garante que não ultrapasse 15 caracteres
+  if (finalCityName.length > 15) {
+    finalCityName = finalCityName.slice(0, 15).trim()
+  }
+
+  return finalCityName
+}
+
+/**
  * Gera o Payload completo do QR Code PIX (string EMV).
  * * @param {string} pixKey - Chave PIX (e-mail, CPF, telefone ou aleatória).
  * @param {string} merchantName - Nome do recebedor (Streamer).
@@ -71,13 +154,18 @@ const formatAmount = (amount: number): string => {
  * @param {string} [txid='***'] - ID da transação (usamos *** como padrão não rastreável).
  * @returns {string} O Payload EMV completo.
  */
-const generatePixPayload = (
-  pixKey: string,
-  merchantName: string,
-  merchantCity: string,
-  amount: number | string,
-  txid = '***',
-) => {
+const generatePixPayload = (pixKey: string, merchantName: string, merchantCity: string, amount: number | string, txid = '***') => {
+  // ========================================
+  // SANITIZAÇÃO E LIMITAÇÃO DE CAMPOS
+  // ========================================
+  const sanizedTxid = txid
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '') // Remove caracteres especiais
+    .slice(0, 25) // Máx. 25 caracteres
+
+  const sanitizedMerchantName = removeAccents(merchantName).slice(0, 25).toUpperCase() // Máx. 25 caracteres
+  const sanitizedMerchantCity = abbreviateCityName(merchantCity).toUpperCase() // Máx. 15 caracteres
+
   // 1. CONSTRUÇÃO DO CAMPO 26: Merchant Account Information
   // Subcampo 00: GUID obrigatório do PIX
   const guiField = formatField('00', 'br.gov.bcb.pix') // ID 00: 14 digitos
@@ -90,7 +178,7 @@ const generatePixPayload = (
   const field26 = formatField('26', field26Value)
 
   // 2. CONSTRUÇÃO DO CAMPO 62: Additional Data Field (TXID)
-  const txidField = formatField('05', txid) // ID 05: TXID
+  const txidField = formatField('05', sanizedTxid) // ID 05: TXID
   const field62 = formatField('62', txidField)
 
   // 3. MONTAGEM DA STRING PRINCIPAL (Payload Parcial)
@@ -121,10 +209,10 @@ const generatePixPayload = (
   payload += formatField('58', 'BR')
 
   // ID 59: Merchant Name
-  payload += formatField('59', merchantName)
+  payload += formatField('59', sanitizedMerchantName)
 
   // ID 60: Merchant City(máximo 15 caracteres)
-  payload += formatField('60', merchantCity)
+  payload += formatField('60', sanitizedMerchantCity)
 
   // ID 62: Additional Data Field (TXID)
   payload += field62
