@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run lint
 
   unit-tests:
@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run test:unit
         env:
           VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
@@ -52,7 +52,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - run: npm run build
         env:
           VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
@@ -82,7 +82,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
 
       # Baixa o build (não precisa buildar de novo!)
       - uses: actions/download-artifact@v4
@@ -118,7 +118,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -152,7 +152,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -186,7 +186,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - uses: actions/download-artifact@v4
         with:
           name: dist
@@ -225,7 +225,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
 
       # Baixa o build já pronto (não rebuilda!)
       - uses: actions/download-artifact@v4
