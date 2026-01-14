@@ -162,7 +162,7 @@ jobs:
         with:
           start: npm run preview
           wait-on: 'http://localhost:4173'
-          spec: cypress/e2e/security.cy.ts
+          spec: cypress/e2e/donation-security.cy.ts
         env:
           VITE_PIX_KEY: ${{ secrets.VITE_PIX_KEY }}
           VITE_MERCHANT_NAME: ${{ secrets.VITE_MERCHANT_NAME }}
