@@ -30,7 +30,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@sentry/vue": "^10.32.1",
     "@tailwindcss/vite": "^4.1.17",
     "@vercel/analytics": "^1.6.1",
     "@vueuse/core": "^14.0.0",
