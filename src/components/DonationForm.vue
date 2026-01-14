@@ -289,7 +289,7 @@ const { cooldownTime } = storeToRefs(rateLimitStore)
 
 // ========== ACTIONS ==========
 
-const { handleModalOpen, handleModalClose, handleCopy, clearNameError, clearAmountError, handleAmountFocus, handleAmountBlur } = donationStore
+const { handleModalOpen, handleModalClose, handleCopy, clearNameError, handleAmountFocus, handleAmountBlur } = donationStore
 
 const handleSubmit = (e: Event): void => {
   e.preventDefault()

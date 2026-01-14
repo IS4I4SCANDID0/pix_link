@@ -59,7 +59,7 @@ export const useRateLimitStore = defineStore(
       countdownInterval = window.setInterval(updateCooldown, 1000)
     }
 
-    const canProceed = (action: string = 'default'): { allowed: boolean; timeToWait: number } => {
+    const canProceed = (_action: string = 'default'): { allowed: boolean; timeToWait: number } => {
       const now = Date.now()
 
       // Verificar se está bloqueado

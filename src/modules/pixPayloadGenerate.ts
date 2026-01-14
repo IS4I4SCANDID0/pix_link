@@ -30,7 +30,7 @@ const calculateCRC16 = (payload: string): string => {
   crc &= 0xffff // Garante que o valor seja de 16 bits
 
   // Converte para hexadecimal, adiciona zeros à esquerda se necessário, e converte para maiúsculas
-  let crcHex = crc.toString(16).toUpperCase()
+  const crcHex = crc.toString(16).toUpperCase()
 
   return crcHex.padStart(4, '0')
 }

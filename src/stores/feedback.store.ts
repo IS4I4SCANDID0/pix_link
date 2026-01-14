@@ -27,7 +27,7 @@ export const useFeedbackStore = defineStore('feedback', () => {
   })
 
   // ========== PRIVATE ==========
-  let timeoutMap = new Map<number, ReturnType<typeof setTimeout>>()
+  const timeoutMap = new Map<number, ReturnType<typeof setTimeout>>()
 
   // ========== ACTIONS ==========
   /**
