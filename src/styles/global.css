@@ -6,6 +6,26 @@
 @tailwindcss components;
 @tailwindcss utilities;
 
+/* Reset CSS */
+
+@layer base {
+  * {
+    @apply m-0 p-0 box-border;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply antialiased text-rendering-optimizeLegibility;
+    line-height: 1.5;
+  }
+
+  /* Corrige o problema da fonte grossa (Bold) */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: inherit;
+  }
+}
+
 :root {
   --flu-red: #870A28;
   --flu-dark-red: #2A030D;
