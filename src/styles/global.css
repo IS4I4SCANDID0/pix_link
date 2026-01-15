@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap'); */
 @import "tailwindcss";
 
 
@@ -23,7 +23,7 @@
   --breakpoint-4xl: 160rem;
 
   /* FONTE */
-  --font-manrope: 'Manrope', 'sans-serif';
+  --font-manrope: 'Manrope', sans-serif;
 
   /* CORES */
   --color-primary-red: var(--flu-dark-red);
