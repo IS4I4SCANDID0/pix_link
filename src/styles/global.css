@@ -16,7 +16,10 @@
   }
 
   body {
-    @apply antialiased text-rendering-optimizeLegibility;
+    
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     line-height: 1.5;
   }
 
